@@ -35,6 +35,7 @@ AI_Answer_Checker/
 ├── main.py           # Interactive command-line application
 ├── checker.py        # Statement checking logic
 ├── test_checker.py   # Automated tests
+├── requirements.txt  # Project dependencies
 └── README.md         # Project documentation
 ```
 
