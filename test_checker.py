@@ -1,5 +1,18 @@
 
-from checker import check_statement, Status
+from checker import check_statement, check_statements, Status
+
+def test_check_multiple_statements():
+    source = "Python is a programming language."
+
+    statements = [
+        "Python is a programming language.",
+        "The Moon is made of cheese.",
+    ]
+
+    results = check_statements(statements, source)
+
+    assert results[statements[0]] == Status.SUPPORTED
+    assert results[statements[1]] == Status.UNSUPPORTED
 
 
 def test_supported_statement():

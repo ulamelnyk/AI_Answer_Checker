@@ -28,3 +28,12 @@ def check_statement(statement, source):
             return Status.CONTRADICTED
 
     return Status.UNSUPPORTED
+
+
+def check_statements(statements, source):
+    results = {}
+
+    for statement in statements:
+        results[statement] = check_statement(statement, source)
+
+    return results

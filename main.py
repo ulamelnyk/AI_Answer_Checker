@@ -1,18 +1,27 @@
 
-from checker import check_statement
+from checker import check_statements
 
 
-source = """
-Python was created by Guido van Rossum.
-The Earth revolves around the Sun.
-"""
+print("=== AI Answer Checker ===")
 
-statements = [
-    "Python was created by Guido van Rossum.",
-    "The Earth revolves around Mars.",
-    "The Moon is made of cheese.",
-]
+source = input("\nEnter source text:\n")
 
-for statement in statements:
-    result = check_statement(statement, source)
+print("\nEnter statements to check.")
+print("Type 'done' when finished.\n")
+
+statements = []
+
+while True:
+    statement = input("Statement: ")
+
+    if statement.lower() == "done":
+        break
+
+    statements.append(statement)
+
+results = check_statements(statements, source)
+
+print("\n=== Results ===")
+
+for statement, result in results.items():
     print(f"{statement} -> {result.value}")
