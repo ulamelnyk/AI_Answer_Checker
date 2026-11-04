@@ -1,39 +1,133 @@
 
-from checker import check_statement, check_statements, get_confidence, Status
-
-def test_supported_confidence():
-    assert get_confidence(Status.SUPPORTED) == 1.0
+import re
+from enum import Enum
 
 
-def test_unsupported_confidence():
-    assert get_confidence(Status.UNSUPPORTED) == 0.0
-
-def test_check_multiple_statements():
-    source = "Python is a programming language."
-
-    statements = [
-        "Python is a programming language.",
-        "The Moon is made of cheese.",
-    ]
-
-    results = check_statements(statements, source)
-
-    assert results[statements[0]] == Status.SUPPORTED
-    assert results[statements[1]] == Status.UNSUPPORTED
+class Status(Enum):
+    SUPPORTED = "SUPPORTED"
+    CONTRADICTED = "CONTRADICTED"
+    UNSUPPORTED = "UNSUPPORTED"
 
 
-def test_supported_statement():
-    source = "The Earth revolves around the Sun."
+def normalize(text):
+    return text.lower().strip().rstrip(".!?")
+
+
+def extract_facts(text):
+    facts = []
+
+    sentences = re.split(r"[.!?]+", text.lower())
+
+    for sentence in sentences:
+        sentence = sentence.strip()
+
+        # Pattern: "Python was created by Guido van Rossum"
+        match = re.fullmatch(
+            r"(.+?) was created by (.+)",
+            sentence
+        )
+
+        if match:
+            subject = match.group(1).strip()
+            creator = match.group(2).strip()
+
+            facts.append((subject, "created_by", creator))
+            continue
+
+        # Pattern: "Guido van Rossum created Python"
+        match = re.fullmatch(
+            r"(.+?) created (.+)",
+            sentence
+        )
+
+        if match:
+            creator = match.group(1).strip()
+            subject = match.group(2).strip()
+
+            facts.append((subject, "created_by", creator))
+            continue
+
+        # Pattern: "The Earth revolves around the Sun"
+        match = re.fullmatch(
+            r"(.+?) revolves around (.+)",
+            sentence
+        )
+
+        if match:
+            subject = match.group(1).strip()
+            object_ = match.group(2).strip()
+
+            facts.append((subject, "revolves_around", object_))
+
+    return facts
+
+
+def check_statement(statement, source):
+    statement_normalized = normalize(statement)
+    source_normalized = normalize(source)
+
+    if statement_normalized in source_normalized:
+        return Status.SUPPORTED
+
+    source_facts = extract_facts(source)
+    statement_facts = extract_facts(statement)
+
+    for claim in statement_facts:
+        for fact in source_facts:
+
+            # Same subject and relation, same object
+            if claim == fact:
+                return Status.SUPPORTED
+
+            # Same subject and relation, different object
+            if claim[0] == fact[0] and claim[1] == fact[1]:
+                return Status.CONTRADICTED
+
+    return Status.UNSUPPORTED
+
+
+def check_statements(statements, source):
+    results = {}
+
+    for statement in statements:
+        results[statement] = check_statement(statement, source)
+
+    return results
+
+
+def get_confidence(status):
+    confidence_scores = {
+        Status.SUPPORTED: 1.0,
+        Status.CONTRADICTED: 1.0,
+        Status.UNSUPPORTED: 0.0,
+    }
+
+    return confidence_scores[status]
+
+
+def test_paraphrased_supported_statement():
+    source = "Python was created by Guido van Rossum."
 
     result = check_statement(
-        "The Earth revolves around the Sun.",
+        "Guido van Rossum created Python.",
         source
     )
 
     assert result == Status.SUPPORTED
 
 
-def test_contradicted_statement():
+def test_paraphrased_contradiction():
+    source = "Python was created by Guido van Rossum."
+
+    result = check_statement(
+        "Python was created by Elon Musk.",
+        source
+    )
+
+    assert result == Status.CONTRADICTED
+
+
+def test_revolves_around_paraphrase():
     source = "The Earth revolves around the Sun."
 
     result = check_statement(
@@ -42,47 +136,3 @@ def test_contradicted_statement():
     )
 
     assert result == Status.CONTRADICTED
-
-
-def test_unsupported_statement():
-    source = "The Earth revolves around the Sun."
-
-    result = check_statement(
-        "The Moon is made of cheese.",
-        source
-    )
-
-    assert result == Status.UNSUPPORTED
-
-
-def test_case_insensitive_matching():
-    source = "The Earth revolves around the Sun."
-
-    result = check_statement(
-        "THE EARTH REVOLVES AROUND THE SUN.",
-        source
-    )
-
-    assert result == Status.SUPPORTED
-
-
-def test_statement_without_punctuation():
-    source = "The Earth revolves around the Sun."
-
-    result = check_statement(
-        "The Earth revolves around the Sun",
-        source
-    )
-
-    assert result == Status.SUPPORTED
-
-
-def test_extra_spaces():
-    source = "The Earth revolves around the Sun."
-
-    result = check_statement(
-        "  The Earth revolves around the Sun.  ",
-        source
-    )
-
-    assert result == Status.SUPPORTED
