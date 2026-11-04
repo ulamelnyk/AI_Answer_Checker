@@ -1,5 +1,12 @@
 
-from checker import check_statement, check_statements, Status
+from checker import check_statement, check_statements, get_confidence, Status
+
+def test_supported_confidence():
+    assert get_confidence(Status.SUPPORTED) == 1.0
+
+
+def test_unsupported_confidence():
+    assert get_confidence(Status.UNSUPPORTED) == 0.0
 
 def test_check_multiple_statements():
     source = "Python is a programming language."

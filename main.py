@@ -1,5 +1,4 @@
-
-from checker import check_statements
+from checker import check_statements, get_confidence
 from json_handler import load_input, save_results
 
 
@@ -16,7 +15,8 @@ def main():
             "results": [
                 {
                     "statement": statement,
-                    "status": result.value
+                    "status": result.value,
+                    "confidence": get_confidence(result)
                 }
                 for statement, result in results.items()
             ]

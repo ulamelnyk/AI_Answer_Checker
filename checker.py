@@ -37,3 +37,13 @@ def check_statements(statements, source):
         results[statement] = check_statement(statement, source)
 
     return results
+
+
+def get_confidence(status):
+    confidence_scores = {
+        Status.SUPPORTED: 1.0,
+        Status.CONTRADICTED: 1.0,
+        Status.UNSUPPORTED: 0.0,
+    }
+
+    return confidence_scores[status]
