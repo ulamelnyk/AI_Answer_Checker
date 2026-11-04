@@ -1,27 +1,26 @@
 
 from checker import check_statements
+from json_handler import load_input, save_results
 
 
-print("=== AI Answer Checker ===")
+data = load_input("input.json")
 
-source = input("\nEnter source text:\n")
-
-print("\nEnter statements to check.")
-print("Type 'done' when finished.\n")
-
-statements = []
-
-while True:
-    statement = input("Statement: ")
-
-    if statement.lower() == "done":
-        break
-
-    statements.append(statement)
+source = data["source"]
+statements = data["statements"]
 
 results = check_statements(statements, source)
 
-print("\n=== Results ===")
+output = {
+    "results": [
+        {
+            "statement": statement,
+            "status": result.value
+        }
+        for statement, result in results.items()
+    ]
+}
 
-for statement, result in results.items():
-    print(f"{statement} -> {result.value}")
+save_results(output, "results.json")
+
+print("Checking completed!")
+print("Results saved to results.json")
