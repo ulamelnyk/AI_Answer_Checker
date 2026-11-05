@@ -8,9 +8,9 @@ AI systems can generate statements that sound convincing but are incorrect or un
 
 The checker classifies statements into three categories:
 
-- **SUPPORTED** – the statement is supported by the provided source text or recognized fact patterns.
-- **CONTRADICTED** – the statement conflicts with information found in the source through predefined rules.
-- **UNSUPPORTED** – the statement cannot be verified or contradicted using the current implementation.
+- **SUPPORTED** - the statement is supported by the provided source text or recognized fact patterns.
+- **CONTRADICTED** - the statement conflicts with information found in the source through predefined rules.
+- **UNSUPPORTED** - the statement cannot be verified or contradicted using the current implementation.
 
 ## Features
 
@@ -42,11 +42,13 @@ AI_Answer_Checker/
 ├── json_handler.py   # JSON input and output handling
 ├── test_checker.py   # Automated tests
 ├── input.json        # Input source and statements
-├── results.json      # Generated verification results
+├── output.json       # Generated verification results
 ├── requirements.txt  # Project dependencies
-├── .gitignore       # Git ignored files
+├── .gitignore        # Git ignored files
 └── README.md         # Project documentation
 ```
+
+**Note:** `output.json` is generated automatically when the application runs successfully. It does not need to be created manually.
 
 ## Installation
 
@@ -58,7 +60,10 @@ cd AI_Answer_Checker
 ```
 
 ### 2. Install dependencies
-
+```bash
+pip install -r requirements.txt
+```
+or
 ```bash
 pip3 install -r requirements.txt
 ```
@@ -90,28 +95,30 @@ python3 main.py
 
 ### 3. View the results
 
-The application generates a `results.json` file containing the verification results.
+After successful execution, the application automatically generates an `output.json` file containing the verification results.
 
-Example:
+Example output:
 
 ```json
-[
-    {
-        "statement": "Guido van Rossum created Python.",
-        "status": "SUPPORTED",
-        "confidence": 1.0
-    },
-    {
-        "statement": "Python was created by Elon Musk.",
-        "status": "CONTRADICTED",
-        "confidence": 1.0
-    },
-    {
-        "statement": "Python is popular in data science.",
-        "status": "UNSUPPORTED",
-        "confidence": 0.0
-    }
-]
+{
+    "results": [
+        {
+            "statement": "Guido van Rossum created Python.",
+            "status": "SUPPORTED",
+            "confidence": 1.0
+        },
+        {
+            "statement": "Python was created by Elon Musk.",
+            "status": "CONTRADICTED",
+            "confidence": 1.0
+        },
+        {
+            "statement": "Python is popular in data science.",
+            "status": "UNSUPPORTED",
+            "confidence": 0.0
+        }
+    ]
+}
 ```
 
 ## Running Tests
