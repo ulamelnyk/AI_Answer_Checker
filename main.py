@@ -22,9 +22,9 @@ def main():
             ]
         }
 
-        save_results(output, "results.json")
+        save_results(output, "output.json")
 
-        print("Checking completed!")
+        print("Results saved to output.json")
         print("Results saved to results.json")
 
     except (FileNotFoundError, ValueError, KeyError) as error:
